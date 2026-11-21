@@ -1,0 +1,17 @@
+{
+  "name": "@noctbot/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.renderer.json",
+    "dev": "bun run build && node scripts/launch.mjs .",
+    "check-types": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.renderer.json --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "24.19.2",
+    "electron": "45.4.1",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,12 @@
+import type { ReactNode } from "react";
+
+interface ButtonProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export const Button = ({ children, className }: ButtonProps) => (
+  <button className={className} type="button">
+    {children}
+  </button>
+);

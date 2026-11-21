@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'" />
+    <title>Noctbot</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="../dist/renderer.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <button id="sidebar-toggle" type="button" aria-label="Toggle bot sidebar" aria-controls="bot-sidebar" aria-expanded="false">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" aria-hidden="true">
+            <rect x="1.5" y="2.5" width="13" height="11" rx="1" />
+            <path d="M5.5 3v10" />
+          </svg>
+        </button>
+        <span class="brand">Noctbot</span>
+        <div class="model-control">
+          <img id="provider-brand" src="./brands/openai.svg" alt="" width="16" height="16" />
+          <select id="model" aria-label="Model" disabled><option value="">Choose a model</option></select>
+        </div>
+        <details id="settings">
+          <summary>Connection</summary>
+          <div class="settings-panel">
+            <form id="connection">
+              <label for="provider">Provider</label>
+              <select id="provider">
+                <option value="codex">ChatGPT · Codex CLI</option>
+                <option value="openai">OpenAI · API key</option>
+                <option value="anthropic">Claude · API key</option>
+                <option value="grok">Grok · API key</option>
+                <option value="gemini">Gemini · API key</option>
+                <option value="kimi">Kimi · API key</option>
+                <option value="mistral">Mistral · API key</option>
+                <option value="opencode">OpenCode Zen · GPT models</option>
+                <option value="ollama">Ollama · Local</option>
+                <option value="lmstudio">LM Studio · Local</option>
+              </select>
+              <div id="key-row" hidden>
+                <label for="key">API key</label>
+                <input id="key" type="password" autocomplete="off" spellcheck="false" />
+              </div>
+              <button id="connect" type="submit">Detect models</button>
+              <p id="status" role="status"></p>
+            </form>
+            <div class="effort">
+              <label for="effort">Reasoning effort</label>
+              <output id="effort-value" for="effort">Provider default</output>
+              <input id="effort" type="range" min="0" max="1" value="0" step="1" disabled />
+            </div>
+          </div>
+        </details>
+      </header>
+      <div class="workspace">
+        <aside class="bot-rail" id="bot-sidebar" aria-label="Bots">
+          <div class="sidebar-heading">
+            <span>Bots</span>
+            <button id="add-bot" type="button" title="Create bot" aria-label="Create bot">+</button>
+          </div>
+          <div id="bots" class="bot-list"></div>
+        </aside>
+        <main class="chat-panel" aria-labelledby="bot-title">
+          <header class="chat-heading">
+            <div class="bot-title">
+              <span class="bot-dot" id="chat-bot-dot" aria-hidden="true"></span>
+              <h1 id="bot-title">Noctbot</h1>
+              <button id="edit-bot" type="button">Edit</button>
+            </div>
+            <div class="chat-controls">
+              <label for="linked-bot">Send replies to</label>
+              <select id="linked-bot"><option value="">No linked bot</option></select>
+              <button id="new-chat" type="button">New chat</button>
+            </div>
+          </header>
+          <div id="transcript" class="transcript" role="log" aria-label="Conversation">
+            <div id="empty" class="empty">
+              <span class="empty-avatar" id="empty-avatar" aria-hidden="true"></span>
+              <h2 id="empty-title">Start a conversation</h2>
+              <p id="empty-description">Connect a model to start chatting.</p>
+            </div>
+            <div id="messages" class="messages"></div>
+          </div>
+          <form id="composer" class="composer">
+            <p id="request-status" role="status"></p>
+            <div class="composer-row">
+              <textarea id="prompt" aria-label="Message" rows="2" maxlength="32000" required placeholder="Message Noctbot…"></textarea>
+              <div class="composer-actions">
+                <button id="queue" type="button" class="quiet-button" disabled>Queue</button>
+                <button id="send" type="submit" class="primary-button" disabled>Send <span aria-hidden="true">↑</span></button>
+              </div>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+    <dialog id="bot-dialog">
+      <form id="create-bot">
+        <h2 id="bot-dialog-title">Create bot</h2>
+        <label for="bot-name">Name</label>
+        <input id="bot-name" maxlength="48" required autofocus />
+        <fieldset class="colors">
+          <legend>Bot color</legend>
+          <div class="color-options">
+            <button type="button" class="color-swatch orange" data-color="#FF884C" aria-label="Orange" aria-pressed="false"></button>
+            <button type="button" class="color-swatch blue" data-color="#3551FF" aria-label="Blue" aria-pressed="false"></button>
+            <button type="button" class="color-swatch red" data-color="#FF0844" aria-label="Red" aria-pressed="false"></button>
+            <label class="custom-color" for="bot-color">
+              <input id="bot-color" type="color" value="#FF884C" />
+              Custom
+            </label>
+          </div>
+        </fieldset>
+        <p id="bot-error" role="status"></p>
+        <div class="dialog-actions">
+          <button id="cancel-bot" type="button">Cancel</button>
+          <button type="submit" id="save-appearance" class="primary-button">Create</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="flow-dialog">
+      <form method="dialog">
+        <h2>Run linked flow?</h2>
+        <p>Each bot receives the preceding reply. Its provider may charge for the request.</p>
+        <ol id="flow-targets"></ol>
+        <div class="dialog-actions">
+          <button type="submit" value="cancel" autofocus>Cancel</button>
+          <button type="submit" value="run" class="primary-button">Run flow</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="reset-dialog">
+      <form method="dialog">
+        <h2>Start a new chat?</h2>
+        <p>This clears the selected bot’s conversation on this device.</p>
+        <div class="dialog-actions">
+          <button type="submit" value="cancel" autofocus>Cancel</button>
+          <button type="submit" value="clear" class="primary-button">Clear chat</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
